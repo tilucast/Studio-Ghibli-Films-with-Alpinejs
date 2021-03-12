@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  
+  <title>Studio Ghibli Films with AlpineJS</title>
+  
+  <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/gh/alpine-collective/alpine-magic-helpers@1.0.x/dist/index.min.js"></script>
+</head>
+<body>
+
+  <main 
+    id="main"
+    x-data="fetchedData()"
+    x-init="$fetch(url).then(data => {
+      films = data
+      $nextTick(() => { changeDivsBackgroundImage() })
+    })"
+  >
+
+      <figure class="logo-container">
+          <img class="logo" src="assets/ghibli.png" alt="studio ghibli logo">
+      </figure>
+
+        <div class="filmes">
+
+            <template 
+                x-for="film in films" 
+                :key="film.title"
+            >
+                <article @click="changeTitleBackgroundImage($refs[film.title])"  class="filme">
+
+                    <div  
+                      class="filme-title"
+                      :x-ref="film.title"
+                      
+                    >
+                        <h2  x-text="film.title" ></h2>
+                    </div>
+
+                    <div class="image-description">
+                        <p class="description" x-text="film.description"></p>
+
+                        <img 
+                            :src="film.image_url" 
+                            :alt="film.title"
+                        >
+                    </div>
+
+                    <h3 x-text="'Director: ' + film.director" ></h3>
+                    <p class="release_date" x-text="'Release Date: ' + film.release_date"></p>
+                    <p class="rt_score" x-text="'Rotten Tomatoes: ' + film.rt_score"></p>
+
+                </article>
+
+            </template>
+
+        </div>
+
+  </main>
+
+  <script>
+
+    function fetchedData(){
+      return {
+        url: "http://localhost:3333",
+        films: [],
+        generateRandomHex: () => Math.random().toString(16).slice(2, 8) ,
+        changeTitleBackgroundImage: function (element) {
+          element.style.backgroundImage = `linear-gradient(to left, #${this.generateRandomHex()}, #${this.generateRandomHex()})`
+        },
+        changeDivsBackgroundImage: function() {
+          const divs = document.querySelectorAll(".filme-title")
+          divs.forEach(div => div.style.backgroundImage = this.changeTitleBackgroundImage(div))
+        }
+      }
+    }
+    
+  </script>
+  
+</body>
+</html>
